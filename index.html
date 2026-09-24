@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4-mavzu — Rossiya Federatsiyasi</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --card: #121a2b;
+    --accent: #3b82f6;
+    --accent2: #22d3ee;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --gold: #fbbf24;
+    --red: #f87171;
+    --green: #34d399;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== HEADER ===== */
+  .topbar {
+    height: 56px;
+    background: linear-gradient(90deg, #0f172a, #1e293b);
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 100;
+  }
+
+  .topbar h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-bar {
+    width: 180px;
+    height: 6px;
+    background: #1e293b;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .slide-counter {
+    font-size: 0.9rem;
+    color: var(--muted);
+    min-width: 52px;
+    text-align: right;
+  }
+
+  /* ===== SLIDES ===== */
+  .slides {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 48px 64px 80px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .slide.prev {
+    transform: translateX(-60px);
+  }
+
+  /* Title slide */
+  .slide-title {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(ellipse at center, #1e3a5f 0%, #0b1220 70%);
+  }
+
+  .flag-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fff 33%, #0039a6 33% 66%, #d52b1e 66%);
+    box-shadow: 0 0 0 8px rgba(59,130,246,0.25), 0 20px 40px rgba(0,0,0,0.4);
+    margin-bottom: 32px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .slide-title h2 {
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #fff, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .slide-title .subtitle {
+    font-size: 1.35rem;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  .start-btn {
+    padding: 14px 36px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), #2563eb);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(59,130,246,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(59,130,246,0.55);
+  }
+
+  /* Content slides */
+  .slide-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .slide-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .slide-header h2 {
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 700;
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+
+  .content::-webkit-scrollbar {
+    width: 6px;
+  }
+  .content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .content::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 99px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .slide.active .card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .slide.active .card:nth-child(1) { transition-delay: 0.1s; }
+  .slide.active .card:nth-child(2) { transition-delay: 0.2s; }
+  .slide.active .card:nth-child(3) { transition-delay: 0.3s; }
+  .slide.active .card:nth-child(4) { transition-delay: 0.4s; }
+  .slide.active .card:nth-child(5) { transition-delay: 0.5s; }
+
+  .card h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p, .card li {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #e2e8f0;
+  }
+
+  .card ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .card li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 8px;
+  }
+
+  .card li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: bold;
+  }
+
+  .highlight {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  .tag-blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+  .tag-red { background: rgba(248,113,113,0.2); color: #f87171; }
+  .tag-green { background: rgba(52,211,153,0.2); color: #34d399; }
+  .tag-gold { background: rgba(251,191,36,0.2); color: #fbbf24; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .slide { padding: 32px 24px 70px; }
+  }
+
+  /* Footer nav */
+  .nav {
+    height: 64px;
+    background: #0f172a;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    padding: 10px 22px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-btn:hover:not(:disabled) {
+    background: #1e293b;
+    border-color: var(--accent);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #334155;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .dot.active {
+    background: var(--accent);
+    transform: scale(1.3);
+  }
+
+  .hint {
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  /* Definition box */
+  .def-box {
+    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(34,211,238,0.08));
+    border-left: 4px solid var(--accent2);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+
+  .def-box strong {
+    color: var(--accent2);
+  }
+
+  /* Question cards */
+  .q-card {
+    background: var(--card);
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .q-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(59,130,246,0.2);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+    border-radius: 99px;
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+  }
+
+  .tl-year {
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 1.05rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>4-MAVZU · ROSSIYA FEDERATSIYASI</h1>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <span class="slide-counter" id="counter">1 / 7</span>
+  </div>
+</div>
+
+<div class="slides" id="slides">
+
+  <!-- 0. TITLE -->
+  <div class="slide slide-title active" data-i="0">
+    <div class="flag-circle"></div>
+    <h2>Rossiya Federatsiyasi</h2>
+    <p class="subtitle">1991-yildan XXI asrgacha: iqtisodiyot, siyosat va tashqi munosabatlar</p>
+    <button class="start-btn" onclick="go(1)">Boshlash →</button>
+  </div>
+
+  <!-- 1. IQTISODIY ISLOHOTLAR -->
+  <div class="slide" data-i="1">
+    <div class="slide-header">
+      <div class="slide-num">1</div>
+      <h2>Iqtisodiy islohotlar</h2>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>📌 1991-yil: SSSR parchalanadi</h3>
+        <p>Rossiya hayotining barcha sohalariga og‘ir ta’sir ko‘rsatdi. Milliy daromad va sanoat ishlab chiqarishi keskin pasaydi.</p>
+      </div>
+      <div class="card">
+        <h3>⚡ 1992-yil 1-yanvar — narxlar erkinlashtirildi</h3>
+        <ul>
+          <li>Narxlar birdaniga ko‘tarildi</li>
+          <li>Oziq-ovqat xarajatlari oila byudjetining asosiy qismiga aylandi</li>
+          <li>Aholi Ikkinchi jahon urushidan keyin birinchi marta kamayishni boshladi</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>💥 “Shok terapiyasi”</h3>
+        <div class="def-box">
+          <strong>Shok terapiyasi</strong> — iqtisodiy nazariya va unga asoslangan keskin islohotlar: narxlarni birdaniga erkinlashtirish, tez xususiyalashtirish.
+        </div>
+        <p>Inflyatsiya to‘xtatilmadi, haqiqiy bozor iqtisodiga o‘tilmadi. 1999-yilga kelib tashqi qarz <span class="highlight">130 milliard dollar</span>ga yetdi. Ishsizlar, qashshoqlar va boshpanasizlar soni keskin oshdi.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ICHKI SIYOSIY HAYOT -->
+  <div class="slide" data-i="2">
+    <div class="slide-header">
+      <div class="slide-num">2</div>
+      <h2>Ichki siyosiy hayot</h2>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>🔥 1991–1993: tanglik davri</h3>
+        <p>Avgust voqealari, SSSR parchalanishi va “shok terapiyasi” jamiyatda ijtimoiy keskinlikni kuchaytirdi. Ish tashlashlar va namoyishlar keng yoyildi.</p>
+      </div>
+      <div class="card">
+        <h3>⚔️ 1993-yil: prezident va parlament to‘qnashuvi</h3>
+        <ul>
+          <li>Boris Yelsin Xalq deputatlari syezdi va Oliy Sovetni tarqatib yubordi</li>
+          <li>Yangi organlar: Federatsiya Kengashi va Davlat Dumasi</li>
+          <li>Oliy Sovet binosi tanklar bilan o‘rab olindi va o‘qqa tutildi</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>📜 1993-yil dekabr — Yangi Konstitutsiya</h3>
+        <p>Aholi prezident taklif qilgan Konstitutsiyani ma’qulladi. Sovet hokimiyat tizimi barham topdi. Zamonaviy demokratik tizim asoslari qo‘yildi.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MILLATLARARO MUNOSABATLAR -->
+  <div class="slide" data-i="3">
+    <div class="slide-header">
+      <div class="slide-num">3</div>
+      <h2>Millatlararo munosabatlar</h2>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>🌍 Ko‘p millatli davlat</h3>
+        <p>SSSR tarqalgach, Tatariston, Boshqirdiston, Yoqutiston va Chechenistonda mustaqillik harakatlari kuchaydi.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3><span class="tag tag-green">Tatariston</span></h3>
+          <p>1992-yilda mustaqillik e’lon qilindi. Prezident M. Shaymiyev vaziyatni o‘z nazoratiga oldi. 1994-yilda federal markaz bilan vakolatlarni taqsimlash shartnomasi imzolandi.</p>
+        </div>
+        <div class="card">
+          <h3><span class="tag tag-red">Checheniston</span></h3>
+          <p>Markaz bilan shartnoma tuzishni rad etdi. 1996–2000-yillar urushi: <span class="highlight">120 mingdan ortiq qurbon</span>, milliardlab dollar zarar.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📋 Federativ Shartnoma (1992-yil mart)</h3>
+        <p>Tatariston va Chechenistondan tashqari barcha subyektlar tomonidan imzolandi. Markaz va mintaqalar vakolatlari Konstitutsiyada mustahkamlandi.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 1990-YILLARDAGI TASHQI SIYOSAT -->
+  <div class="slide" data-i="4">
+    <div class="slide-header">
+      <div class="slide-num">4</div>
+      <h2>1990-yillardagi tashqi siyosat</h2>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>🇺🇸 AQSH bilan munosabatlar</h3>
+        <ul>
+          <li>1992 — do‘stlik xartiyasi</li>
+          <li>1993 — hujum qurollarini qisqartirish shartnomasi</li>
+          <li>1994 — Bill Klinton Rossiyani <span class="highlight">G7</span> ga taklif qildi</li>
+          <li>Ammo tenglikka asoslangan munosabatlar shakllanmadi</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🛡️ NATO kengayishi</h3>
+        <p>NATOning Sharqqa siljishi davom etdi. 1999-yilda Yugoslaviya bombardimon qilinishi Rossiya–AQSH munosabatlarini sovuqlashtirdi.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>🇪🇺 Yevropa</h3>
+          <p>Germaniya, Britaniya, Fransiya bilan iqtisodiy aloqalar rivojlandi, biroq kutilgan natijalar bermadi.</p>
+        </div>
+        <div class="card">
+          <h3>🌏 Osiyo</h3>
+          <p>Yaponiya bilan iqtisodiy aloqalar kuchaydi. Xitoy bilan munosabatlar rivojlandi. Janubiy Koreya bilan aloqa Shimoliy Koreyani sovuqlashtirdi.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. ROSSIYA XXI ASRDA -->
+  <div class="slide" data-i="5">
+    <div class="slide-header">
+      <div class="slide-num">5</div>
+      <h2>Rossiya XXI asrda</h2>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>👤 Vladimir Putin (2000-yildan)</h3>
+        <p>Yelsin 1999-yil dekabrda iste’foga chiqdi. Putin kuchli davlat hokimiyati tarafdori sifatida chiqdi. Ichki hokimiyat va xalqaro obro‘ mustahkamlandi.</p>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">2008</div>
+          <p><span class="tag tag-red">Besh kunlik urush</span> — Gruziya (Janubiy Osetiya va Abxaziya). Rossiya–Gruziya munosabatlari keskin yomonlashdi.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2014</div>
+          <p>Ukrainada hokimiyat almashinuvi. <span class="highlight">Qrim</span> va Sevastopol Rossiya tarkibiga kirdi (referendum). Dunyo davlatlarining ko‘pchiligi tan olmadi.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2014–2022</div>
+          <p>Donetsk va Lugansk Xalq Respublikalari e’lon qilindi. Harbiy harakatlar boshlandi.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2022</div>
+          <p>24-fevral — maxsus harbiy operatsiya boshlandi. Sentyabrda Donetsk, Lugansk, Zaporojye va Xerson viloyatlari qo‘shib olindi. BMT a’zolarining ko‘pchiligi Ukraina yaxlitligini qo‘llab kelmoqda.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🇺🇿 O‘zbekiston — Rossiya</h3>
+        <p>1992-yil 20-mart — diplomatik munosabatlar. 2017-yildan yangi bosqich. 2022-yil sentyabr — <span class="highlight">qamrovli strategik sheriklik</span> deklaratsiyasi imzolandi.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. XULOSA VA SAVOLLAR -->
+  <div class="slide" data-i="6">
+    <div class="slide-header">
+      <div class="slide-num">6</div>
+      <h2>Xulosa va mustahkamlash</h2>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h3>✅ Asosiy xulosalar</h3>
+        <ul>
+          <li>1990-yillar — sovet tizimini buzish va demokratik hokimiyat asoslarini yaratish davri</li>
+          <li>“Shok terapiyasi” og‘ir ijtimoiy oqibatlarga olib keldi</li>
+          <li>XXI asrda Rossiya tashqi siyosatda faol (Qrim, Donbass, Gruziya)</li>
+          <li>O‘zbekiston bilan strategik sheriklik mustahkamlanmoqda</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>❓ Mustahkamlash savollari</h3>
+        <div class="q-card"><div class="q-num">1</div><div>Rossiya hukumati tomonidan amalga oshirilgan iqtisodiy islohotlar qanday natijalarga olib keldi?</div></div>
+        <div class="q-card"><div class="q-num">2</div><div>1990-yillari Rossiyada amalga oshirilgan eng muhim siyosiy islohotning mohiyati nima edi?</div></div>
+        <div class="q-card"><div class="q-num">3</div><div>“Shok terapiyasi” Rossiya Federatsiyasiga qanday ta’sir ko‘rsatdi?</div></div>
+        <div class="q-card"><div class="q-num">4</div><div>XXI asrda Rossiya tashqi siyosatdagi qanday muammolarni hal qilishga urinmoqda?</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="prev()" disabled>← Oldingi</button>
+  <div class="dots" id="dots"></div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="hint">← → klaviatura</span>
+    <button class="nav-btn" id="nextBtn" onclick="next()">Keyingi →</button>
+  </div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => go(i);
+    dotsEl.appendChild(d);
+  }
+
+  function update() {
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'prev');
+      if (i === current) s.classList.add('active');
+      else if (i < current) s.classList.add('prev');
+    });
+
+    document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === total - 1;
+    document.getElementById('nextBtn').textContent = current === total - 1 ? 'Tugadi ✓' : 'Keyingi →';
+  }
+
+  function go(i) {
+    if (i < 0 || i >= total) return;
+    current = i;
+    update();
+  }
+
+  function next() { go(current + 1); }
+  function prev() { go(current - 1); }
+
+  // keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+
+  // touch swipe
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (dx < -60) next();
+    if (dx > 60) prev();
+  });
+
+  update();
+</script>
+</body>
+</html>
